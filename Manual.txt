@@ -1,0 +1,71 @@
+%====================================================================================================================
+% Manual for using the software in simDAE-optimalcontrol
+% This software is part of the paper "Simulation-based Approach for Fast Optimal Control of a Stefan Problem 
+% with Application to Cell Therapy" published in Automatic.
+%
+% Created by Prakitr Srisuma
+%====================================================================================================================
+
+%%% Adding to Path
+First, add every folder to Path before running any simulation. 
+addpath('Python','Events','Input Data','Plotting','Objective Functions','Optimal Control', 'PDEs','Calculations')
+
+The software also requires CasADi and IPOPT (obtained here via OPTI-master) to be added.
+Assume that both software is in the designated folders, then
+addpath(genpath('CasADi')) 
+addpath(genpath('OPTI-master'))
+
+The software also requires GEKKO and Python to be installed.
+
+We refer to the references in the paper for installation guides and files of all software tools.
+
+
+%%% Top-level Routines
+To run a simulation, simply open the top-level routines and click "Run".
+There are three top-level routines in this work.
+1. Main_MinTime: This routine corresponds to Problem 1 in the paper.
+2. Main_TempChange: This routine corresponds to Problem 2 in the paper.
+3. Main_ItfVelocity: This routine corresponds to Problem 3 in the paper.
+Set 'on' for examples that you want to run.
+
+For Problem 4, simply run Problem 2 or 3 with different setpoints.
+
+
+%%% Folders
+1. Calculations: contain functions that calculate several process variables
+2. Events: contain event functions to terminate the ODE solver
+3. Input Data: contain functions to define every input information/parameter
+4. Objective Functions: contain functions that define the objective functions for the optimization-based approaches
+5. Optimal Control: contain functions that implement various optimization-based approaches
+6. PDEs: contain functions that define the PDEs/ODEs
+7. Plotting: contain functions for plotting
+8. Python: contain functions for the simulation-based approach and optimization using GEKKO
+
+
+%%% Defining Input Parameters
+There are a lot of parameters in our simulations, with many different functions that rely on them. 
+Hence, it is important to systematically define input parameters to ensure that everything is consistent.
+ 
+Here are some key steps.
+1. In the file "get_inputdata", define all independent inputs here. 
+"Independent" in this case = the input is not calculated from or relies on any other input.
+2. In the file "input_processing", define all dependent inputs here. 
+"Dependent" in this case = the input must be calculated from some other input parameters. 
+Hence, all formulas/correlations are defined here.
+
+A simple way to extract the inputs is
+ip0 = get_input_data;  % define all independent inputs
+ip = input_processing(ip0);  % pass independent inputs to the function that calculates in dependent inputs
+
+To change the value of each input parameter, you can either correct it directly in "get_inputdata" 
+or overwrite it before passing to "input_processing". For example,
+ip0 = get_inputdata;  
+ip0.nc = 1;  % overwrite the parameter nc
+ip = input_processing(ip0); 
+
+With the above syntax, "ip" is the final struct that contains all input parameters. Always pass "ip" to any 
+function that requires input data to ensure that every function and calculation are based on the same set 
+of inputs. When there are changes in any independent inputs, always run "input_processing" to ensure that 
+all dependent inputs are updated using the above syntax.
+
+%====================================================================================================================
